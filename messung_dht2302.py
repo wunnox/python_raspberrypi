@@ -8,10 +8,14 @@
 # Version: 1.0
 #
 # Date: 09.12.2020
-# Date: 
+# Date:
 # Date:
 #
+# Sensor: DHT22/AM2302 Digitaler Temperatur und Feuchtigskeitssensor
 # Purpose: Misst die Temperatur und Luftfeuchtigkeit
+# Module:
+#   - pip3 install adafruit-circuitpython-dht
+#   - sudo apt-get install libgpiod2
 #
 ##############################################
 
@@ -19,17 +23,18 @@
 import adafruit_dht
 import board
 
-def sensor_dht22():
-    '''dht2302 Temperatur/Feuchtigkeitssensor'''
+#Variabeln
+pin=board.D17 # GPIO Pin angeben
 
-    # GPIO Pin angeben
+def sensor_dht22():
+    '''Messung ausführen'''
 
     try:
-        dhtDevice = adafruit_dht.DHT22(board.D17)
+        dhtDevice = adafruit_dht.DHT22(pin)
         #Messungen einlesen
-        temp_aussen = dhtDevice.temperature
-        humid_aussen = dhtDevice.humidity
-        return temp_aussen,humid_aussen
+        temp = dhtDevice.temperature
+        humid = dhtDevice.humidity
+        return temp,humid
 
     except RuntimeError as error:
         # Errors happen fairly often, DHT's are hard to read, just keep going
@@ -37,6 +42,6 @@ def sensor_dht22():
         return 0.0,0.0
 
 if __name__=='__main__':
-   temp_aussen,humid_aussen=sensor_dht22()
-   print("Temperatur  : {:.1f} % ".format(temp_aussen))
-   print("Feuchtigkeit: {} % ".format(humid_aussen))
+   temp,humid=sensor_dht22()
+   print("Temperatur  : {:.1f} °C ".format(temp))
+   print("Feuchtigkeit: {} % ".format(humid))
