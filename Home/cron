@@ -1,0 +1,6 @@
+0 7 * * * /home/pi/scripts/check_nas.py >/dev/null 2>&1
+1 7 * * * /home/pi/scripts/check_web.py >/dev/null 2>&1
+5 7 * * * /home/pi/scripts/check_mail.bash >/dev/null 2>&1
+0 23 * * * /home/pi/scripts/save_cfg.bash >/dev/null 2>&1
+5 23 * * * /home/pi/scripts/save_scripts.bash >/dev/null 2>&1
+0 21 * * * /home/pi/scripts/fhem_analyse.py -c -a -A >/dev/null 2>&1

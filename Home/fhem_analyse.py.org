@@ -1,0 +1,58 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+##############################################
+#
+# Name: fhem_analyse.py
+#
+# Author: Peter Christen
+#
+# Version: 1.0
+# 
+# Date: 05.12.2016 - V1.0
+#
+# Purpose: Daten aus fhem-Log-Dateien einlesen
+#
+##############################################
+
+import sqlite3,os
+
+#Variabeln
+logpfad="/opt/fhem/log"
+mydatabase="/data/fhem.db"
+connection=sqlite3.connect(mydatabase)
+cursor=connection.cursor()
+a=0
+
+cursor.execute('create table if not exists fhem ( Nr varchar(20) primary key, Datum date, Zeit time, Target varchar(30), Trigger varchar(10))')
+#cursor.execute('create index if not exists fhem_ind on fhem (Nr,Target)')
+
+for file in os.listdir(logpfad):
+   if "Fenster" in file or "Tuere" in file:
+      print ("Lese File", file)
+
+      logfile=logpfad+"/"+file
+      f=open(logfile, 'r')
+      allezeilen = f.readlines()
+      f.close()
+
+      z=0
+      zo=0
+      for zeile in allezeilen:
+         z+=1
+         datumzeit=zeile[:19]
+         ind=datumzeit.replace('-','').replace('_','').replace(':','')
+         datum,zeit=datumzeit.split('_')
+         datum=datum.replace('-','/')
+         ind=ind+str(z)
+         w=zeile.split(' ')
+         target=w[1]
+         trigger=w[2].replace('\n','')
+         if "closed" in w[2] or "open" in w[2]:
+            zo+=1
+            #print (ind, datum, zeit, target, trigger)
+            cursor.execute("insert or ignore into fhem values(?,?,?,?,?)",(ind,datum,zeit,target,trigger))
+      connection.commit()
+      print (z,"Zeilen eingelesen,", zo, "geschreiben")
+
+cursor.close()
+
